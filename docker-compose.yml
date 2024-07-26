@@ -1,0 +1,20 @@
+﻿version: "3.9"
+networks:
+  deploy-guide-dev:
+    driver: bridge
+services:
+  postgres_db:
+    container_name: postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: 1235
+      POSTGRES_DB: pgbase
+    ports:
+      - "5432:5432"
+    networks:
+      - deploy-guide-dev
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
