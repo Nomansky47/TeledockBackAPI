@@ -6,16 +6,20 @@ namespace TeledockBackAPI.Controllers
     [Route("Home")]
     public class APIController : Controller
     {
-        Context _context;
+        Repo<Founder> FounderRepo;
+        Repo<Client> ClientRepo;
         public APIController(Context context)
         {
-            _context = context;
+            FounderRepo=new Repo<Founder>(context);
+            ClientRepo=new Repo<Client>(context);
+            
         }
 
-        [HttpPost("register/founder/{inn}/{clientid}/{surname}/{name}/{patronymic}")]
+        [HttpPost("register/founder/")]
         public IActionResult RegisterFounder(int inn, int clientid,string surname, string name, string patronymic)
         {
-            if (_context.Founders.FirstOrDefault(p => p.INN == inn) == null)
+            var Founders=FounderRepo.GetAll();
+            if (Founders.FirstOrDefault(p => p.INN == inn) == null)
             {
                 var founder = new Founder();
                 founder.Surname = surname;
@@ -25,16 +29,16 @@ namespace TeledockBackAPI.Controllers
                 founder.Patronymic = patronymic;
                 founder.AddDate= DateTime.Now.Date;
                 founder.UpdateDate = DateTime.Now.Date;
-                _context.Founders.Add(founder);
-                _context.SaveChanges();
+                FounderRepo.Add(founder);
                 return Ok();
             }
             return NotFound();
         }
-        [HttpPost("register/client/{inn}/{name}/{isindividual}")]
+        [HttpPost("register/client/")]
         public IActionResult RegisterClient(int inn, string name, bool isindividual)
         {
-            if (_context.Clients.FirstOrDefault(p => p.INN == inn) == null)
+            var Clients=ClientRepo.GetAll();
+            if (Clients.FirstOrDefault(p => p.INN == inn) == null)
             {
                 var client = new Client();
                 client.INN = inn;
@@ -42,32 +46,32 @@ namespace TeledockBackAPI.Controllers
                 client.IsIndividual = isindividual;
                 client.AddDate = DateTime.Now.Date;
                 client.UpdateDate = DateTimeOffset.Now.Date;
-                _context.Clients.Add(client);
-                _context.SaveChanges();
+                ClientRepo.Add(client);
                 return Ok();
             }
             return NotFound();
         }
-        [HttpPut("change/client/{id}/{inn}/{name}/{isindividual}")]
+        [HttpPut("change/client/")]
         public IActionResult ChangeClient(int id,int inn, string name, bool isindividual)
         {
-            var client = _context.Clients.FirstOrDefault(p => p.Id == id);
+            var client = ClientRepo.GetId(id);
             if (client != null)
             {
                 client.INN = inn;
                 client.Name = name;
                 client.IsIndividual = isindividual;
                 client.UpdateDate = DateTimeOffset.Now.Date;
-                _context.SaveChanges();
+                ClientRepo.Update(client);
+                
                 return Ok();
             }
             return NotFound();
         }
 
-        [HttpPut("change/founder/{id}/{inn}/{clientid}/{surname}/{name}/{patronymic}")]
+        [HttpPut("change/founder/")]
         public IActionResult ChangeFounder(int id, int inn, int clientid, string surname, string name, string patronymic)
         {
-            var founder = _context.Founders.FirstOrDefault(p => p.Id == id);
+            var founder = FounderRepo.GetId(id);
             if (founder != null)
             {
                 founder.Surname = surname;
@@ -76,7 +80,7 @@ namespace TeledockBackAPI.Controllers
                 founder.ClientID = clientid;
                 founder.Patronymic = patronymic;
                 founder.UpdateDate = DateTimeOffset.Now.Date;
-                _context.SaveChanges();
+                FounderRepo.Update(founder);
                 return Ok();
             }
             return NotFound();
@@ -86,28 +90,28 @@ namespace TeledockBackAPI.Controllers
         [Route("founder/{id}")]
         public Founder GetFounder(int id)
         {
-            return _context.Founders.FirstOrDefault(p => p.Id == id);
+            return FounderRepo.GetId(id);
         }
 
         [HttpGet]
         [Route("client/{id}")]
         public Client GetClient(int id)
         {
-            return _context.Clients.FirstOrDefault(p => p.Id == id);
+            return ClientRepo.GetId(id);
         }
 
         [HttpGet]
         [Route("clients")]
         public IEnumerable<Client> GetClients()
         {
-            return _context.Clients.ToList();
+            return ClientRepo.GetAll();
         }
 
         [HttpGet]
         [Route("founders")]
         public IEnumerable<Founder> GetFounders()
         {
-            return _context.Founders.ToList();
+            return FounderRepo.GetAll();
         }
 
     }
