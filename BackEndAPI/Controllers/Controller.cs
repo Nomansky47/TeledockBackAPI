@@ -15,7 +15,7 @@ namespace TeledockBackAPI.Controllers
             
         }
 
-        [HttpPost("register/founder/")]
+        [HttpPost("register/founder")]
         public IActionResult RegisterFounder(int inn, int clientid,string surname, string name, string patronymic)
         {
             var Founders=FounderRepo.GetAll();
@@ -34,7 +34,7 @@ namespace TeledockBackAPI.Controllers
             }
             return NotFound();
         }
-        [HttpPost("register/client/")]
+        [HttpPost("register/client")]
         public IActionResult RegisterClient(int inn, string name, bool isindividual)
         {
             var Clients=ClientRepo.GetAll();
@@ -51,7 +51,7 @@ namespace TeledockBackAPI.Controllers
             }
             return NotFound();
         }
-        [HttpPut("change/client/")]
+        [HttpPut("change/client")]
         public IActionResult ChangeClient(int id,int inn, string name, bool isindividual)
         {
             var client = ClientRepo.GetId(id);
@@ -68,7 +68,7 @@ namespace TeledockBackAPI.Controllers
             return NotFound();
         }
 
-        [HttpPut("change/founder/")]
+        [HttpPut("change/founder")]
         public IActionResult ChangeFounder(int id, int inn, int clientid, string surname, string name, string patronymic)
         {
             var founder = FounderRepo.GetId(id);
